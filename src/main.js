@@ -207,6 +207,61 @@ class LootChecker {
 
         document.getElementById('download-chest-log').href = checkLogUrl;
         document.getElementById('download-chest-log').download = 'remaining_chest_items.txt';
+
+        // Set up the upload functionality
+        this.setupUploadFunctionality(lootLoggerBlob);
+    }
+
+    setupUploadFunctionality(lootLoggerBlob) {
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadStatus = document.getElementById('upload-status');
+
+        uploadBtn.addEventListener('click', () => {
+            this.uploadToLootLoggerViewer(lootLoggerBlob, uploadStatus);
+        });
+    }
+
+    uploadToLootLoggerViewer(lootLoggerBlob, statusElement) {
+        try {
+            statusElement.textContent = 'Preparing upload...';
+            statusElement.style.color = '#3498db';
+
+            // Create a temporary file from the blob
+            const file = new File([lootLoggerBlob], 'missing_loot_items.txt', { type: 'text/plain' });
+
+            // Create a temporary download link for the file
+            const fileUrl = URL.createObjectURL(file);
+            
+            // Open the Loot Logger Viewer in a new tab
+            const newTab = window.open('https://matheus.sampaio.us/ao-loot-logger-viewer/', '_blank');
+            
+            if (newTab) {
+                // Try a simpler approach - just provide the download link with clear instructions
+                statusElement.innerHTML = `
+                    Loot Logger Viewer opened in a new tab.<br>
+                    <strong>Quick Upload Instructions:</strong><br>
+                    1. <strong>Download this file:</strong> <a href="${fileUrl}" download="missing_loot_items.txt" style="color: #3498db; text-decoration: underline; font-weight: bold;">missing_loot_items.txt</a><br>
+                    2. <strong>Drag and drop</strong> the downloaded file directly onto the Loot Logger Viewer page<br>
+                    <em>or</em><br>
+                    2. Click "Choose Files" and select the downloaded file
+                `;
+                statusElement.style.color = '#27ae60';
+            } else {
+                statusElement.innerHTML = `
+                    Popup blocked! Please allow popups for this site.<br>
+                    <strong>Manual upload instructions:</strong><br>
+                    1. Download this file: <a href="${fileUrl}" download="missing_loot_items.txt" style="color: #3498db; text-decoration: underline;">missing_loot_items.txt</a><br>
+                    2. Go to <a href="https://matheus.sampaio.us/ao-loot-logger-viewer/" target="_blank" style="color: #3498db; text-decoration: underline;">Loot Logger Viewer</a><br>
+                    3. Drag and drop the file onto the page or use the "Choose Files" button
+                `;
+                statusElement.style.color = '#f39c12';
+            }
+
+        } catch (error) {
+            statusElement.textContent = `Upload failed: ${error.message}`;
+            statusElement.style.color = '#e74c3c';
+            console.error('Upload error:', error);
+        }
     }
 
     showProgress(show) {

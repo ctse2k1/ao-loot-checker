@@ -156,6 +156,10 @@
             background: #229954;
         }
 
+        .upload-button:hover {
+            background: #8e44ad;
+        }
+
         .error {
             background: #e74c3c;
             color: white;
@@ -221,6 +225,15 @@
         <div class="download-links">
             <a href="#" class="download-link" id="download-loot-logger">Download Missing Loot Items</a>
             <a href="#" class="download-link" id="download-chest-log">Download Remaining Chest Items</a>
+        </div>
+        
+        <div class="upload-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <h3>Upload to Loot Logger Viewer</h3>
+            <p>Upload the Missing Loot Items file to the Loot Logger Viewer:</p>
+            <button id="upload-btn" class="upload-button" style="background: #9b59b6; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; cursor: pointer; transition: background 0.3s ease;">
+                Upload to Loot Logger Viewer
+            </button>
+            <div id="upload-status" style="margin-top: 10px; font-size: 0.9em;"></div>
         </div>
     </div>
 
