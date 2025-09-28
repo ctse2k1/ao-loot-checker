@@ -85,10 +85,10 @@ export function mergeLootLoggerFiles(filesData) {
 }
 
 export function matchAndReduceQuantities(lootLoggerData, checkLogData) {
-    // Create a map for efficient lookup
+    // Create a map for efficient lookup of chest log entries by Player + Item
     const checkLogMap = new Map();
     
-    // Group chest log entries by Player + Item
+    // Group chest log entries by Player + Item, preserving order
     checkLogData.forEach((entry, index) => {
         const key = `${entry.Player}|${entry.Item}`;
         if (!checkLogMap.has(key)) {
@@ -98,30 +98,35 @@ export function matchAndReduceQuantities(lootLoggerData, checkLogData) {
     });
 
     // Process each loot logger entry
-    lootLoggerData.forEach(lootEntry => {
+    for (let i = lootLoggerData.length - 1; i >= 0; i--) {
+        const lootEntry = lootLoggerData[i];
         const key = `${lootEntry.looted_by__name}|${lootEntry.item_name}`;
         const matchingEntries = checkLogMap.get(key);
 
         if (matchingEntries) {
-            let remainingQuantity = lootEntry.quantity;
-            
-            // Process matching entries in order
+            // Process matching chest log entries in order
             for (const { entry } of matchingEntries) {
-                if (remainingQuantity <= 0) break;
+                if (lootEntry.quantity <= 0) break;
                 
-                const reduceAmount = Math.min(remainingQuantity, entry.Amount);
+                const reduceAmount = Math.min(lootEntry.quantity, entry.Amount);
+                lootEntry.quantity -= reduceAmount;
                 entry.Amount -= reduceAmount;
-                remainingQuantity -= reduceAmount;
                 
-                // If amount reaches zero, mark for removal
+                // If chest log amount reaches zero, mark for removal
                 if (entry.Amount <= 0) {
                     entry._markedForRemoval = true;
                 }
+                
+                // If loot logger quantity reaches zero, remove it and break
+                if (lootEntry.quantity <= 0) {
+                    lootLoggerData.splice(i, 1);
+                    break;
+                }
             }
         }
-    });
+    }
 
-    // Remove entries marked for removal
+    // Remove chest log entries marked for removal
     for (let i = checkLogData.length - 1; i >= 0; i--) {
         if (checkLogData[i]._markedForRemoval) {
             checkLogData.splice(i, 1);

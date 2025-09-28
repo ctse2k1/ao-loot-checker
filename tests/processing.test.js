@@ -110,7 +110,7 @@ describe('File Merging', () => {
 });
 
 describe('Matching and Reduction', () => {
-    test('should reduce quantities for matching entries', () => {
+    test('should reduce quantities for matching entries in both files', () => {
         const lootLoggerData = [
             {
                 looted_by__name: 'PlayerA',
@@ -134,12 +134,15 @@ describe('Matching and Reduction', () => {
         
         matchAndReduceQuantities(lootLoggerData, checkLogData);
         
-        // First entry should be reduced by 3, second entry unchanged
+        // Loot logger quantity should be reduced to 0 and removed
+        expect(lootLoggerData).toHaveLength(0);
+        
+        // First chest log entry should be reduced by 3, second entry unchanged
         expect(checkLogData[0].Amount).toBe(2); // 5 - 3 = 2
         expect(checkLogData[1].Amount).toBe(2); // Unchanged
     });
 
-    test('should remove entries when amount reaches zero', () => {
+    test('should remove entries when quantities reach zero in both files', () => {
         const lootLoggerData = [
             {
                 looted_by__name: 'PlayerA',
@@ -163,8 +166,46 @@ describe('Matching and Reduction', () => {
         
         matchAndReduceQuantities(lootLoggerData, checkLogData);
         
-        // Both entries should be removed as total amount (5) matches loot quantity (5)
+        // Both loot logger and chest log entries should be removed
+        expect(lootLoggerData).toHaveLength(0);
         expect(checkLogData).toHaveLength(0);
+    });
+
+    test('should handle partial reduction across multiple chest log entries', () => {
+        const lootLoggerData = [
+            {
+                looted_by__name: 'PlayerA',
+                item_name: 'Sword of Dawn',
+                quantity: 4
+            }
+        ];
+        
+        const checkLogData = [
+            {
+                Player: 'PlayerA',
+                Item: 'Sword of Dawn',
+                Amount: 2
+            },
+            {
+                Player: 'PlayerA',
+                Item: 'Sword of Dawn',
+                Amount: 1
+            },
+            {
+                Player: 'PlayerA',
+                Item: 'Sword of Dawn',
+                Amount: 3
+            }
+        ];
+        
+        matchAndReduceQuantities(lootLoggerData, checkLogData);
+        
+        // Loot logger should be removed (quantity reached 0)
+        expect(lootLoggerData).toHaveLength(0);
+        
+        // First two chest log entries should be removed, third should have 2 remaining
+        expect(checkLogData).toHaveLength(1);
+        expect(checkLogData[0].Amount).toBe(2); // 3 - 1 = 2
     });
 
     test('should handle non-matching entries', () => {
@@ -184,11 +225,54 @@ describe('Matching and Reduction', () => {
             }
         ];
         
-        const originalData = [...checkLogData];
+        const originalLootLoggerData = [...lootLoggerData];
+        const originalCheckLogData = [...checkLogData];
         matchAndReduceQuantities(lootLoggerData, checkLogData);
         
         // No changes should occur for non-matching entries
-        expect(checkLogData).toEqual(originalData);
+        expect(lootLoggerData).toEqual(originalLootLoggerData);
+        expect(checkLogData).toEqual(originalCheckLogData);
+    });
+
+    test('should process multiple loot logger items correctly', () => {
+        const lootLoggerData = [
+            {
+                looted_by__name: 'PlayerA',
+                item_name: 'Sword of Dawn',
+                quantity: 2
+            },
+            {
+                looted_by__name: 'PlayerB',
+                item_name: 'Shield of Light',
+                quantity: 3
+            }
+        ];
+        
+        const checkLogData = [
+            {
+                Player: 'PlayerA',
+                Item: 'Sword of Dawn',
+                Amount: 5
+            },
+            {
+                Player: 'PlayerB',
+                Item: 'Shield of Light',
+                Amount: 2
+            }
+        ];
+        
+        matchAndReduceQuantities(lootLoggerData, checkLogData);
+        
+        // PlayerA's loot logger item should be removed (quantity reached 0)
+        // PlayerB's loot logger item should remain with quantity 1 (3 - 2 = 1)
+        expect(lootLoggerData).toHaveLength(1);
+        expect(lootLoggerData[0].looted_by__name).toBe('PlayerB');
+        expect(lootLoggerData[0].quantity).toBe(1);
+        
+        // Chest log entries should be reduced
+        expect(checkLogData).toHaveLength(1); // Only first entry remains
+        expect(checkLogData[0].Amount).toBe(3); // 5 - 2 = 3
+        // Second chest log entry should be removed (Amount reached 0)
     });
 });
 
