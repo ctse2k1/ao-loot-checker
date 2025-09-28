@@ -129,13 +129,13 @@ class LootChecker {
             this.updateProgress(40, 'Processing Chest Log...');
             const outputCheckLog = [...checkLogData];
 
-            // Step 4: Matching and reduction
-            this.updateProgress(60, 'Matching and reducing quantities...');
-            matchAndReduceQuantities(mergedLootLogger, outputCheckLog);
-
-            // Step 5: Timestamp pruning
-            this.updateProgress(80, 'Pruning old timestamps...');
+            // Step 4: Timestamp pruning
+            this.updateProgress(60, 'Pruning old timestamps...');
             pruneOldTimestamps(mergedLootLogger, outputCheckLog);
+
+            // Step 5: Matching and reduction
+            this.updateProgress(80, 'Matching and reducing quantities...');
+            matchAndReduceQuantities(mergedLootLogger, outputCheckLog);
 
             // Step 6: Generate output files
             this.updateProgress(90, 'Generating output files...');
