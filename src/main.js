@@ -207,6 +207,70 @@ class LootChecker {
 
         document.getElementById('download-chest-log').href = checkLogUrl;
         document.getElementById('download-chest-log').download = 'remaining_chest_items.txt';
+
+        // Set up the upload functionality
+        this.setupUploadFunctionality(lootLoggerBlob);
+    }
+
+    setupUploadFunctionality(lootLoggerBlob) {
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadStatus = document.getElementById('upload-status');
+
+        uploadBtn.addEventListener('click', () => {
+            this.uploadToLootLoggerViewer(lootLoggerBlob, uploadStatus);
+        });
+    }
+
+    uploadToLootLoggerViewer(lootLoggerBlob, statusElement) {
+        try {
+            statusElement.textContent = 'Creating upload form...';
+            statusElement.style.color = '#3498db';
+
+            // Create a temporary file from the blob
+            const file = new File([lootLoggerBlob], 'missing_loot_items.txt', { type: 'text/plain' });
+
+            // Create a hidden form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://matheus.sampaio.us/ao-loot-logger-viewer/';
+            form.enctype = 'multipart/form-data';
+            form.target = '_blank';
+            form.style.display = 'none';
+
+            // Create file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = 'file';
+            fileInput.style.display = 'none';
+
+            // Create a data transfer object to set the file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            // Add file input to form
+            form.appendChild(fileInput);
+
+            // Add form to document
+            document.body.appendChild(form);
+
+            statusElement.textContent = 'Opening Loot Logger Viewer...';
+
+            // Submit the form
+            form.submit();
+
+            // Clean up after a short delay
+            setTimeout(() => {
+                document.body.removeChild(form);
+                statusElement.textContent = 'Upload initiated! The Loot Logger Viewer should open in a new tab.';
+                statusElement.style.color = '#27ae60';
+            }, 1000);
+
+        } catch (error) {
+            statusElement.textContent = `Upload failed: ${error.message}`;
+            statusElement.style.color = '#e74c3c';
+            console.error('Upload error:', error);
+        }
     }
 
     showProgress(show) {
