@@ -1,13 +1,13 @@
 # AO Loot Checker
 
-A lightweight web application for processing Loot Logger and Check Log files to match and reduce item quantities.
+A lightweight web application for processing Loot Logger and Chest Log files to match and reduce item quantities.
 
 ## Features
 
 - **Drag & Drop Interface**: Easy file upload with visual feedback
 - **File Processing**: 
   - Merge multiple Loot Logger files (Type #1)
-  - Process Check Log files (Type #2)
+  - Process Chest Log files (Type #2)
   - Match items between files and reduce quantities
   - Prune old timestamps based on loot activity
 - **Client-Side Processing**: All processing happens in the browser
@@ -21,7 +21,7 @@ A lightweight web application for processing Loot Logger and Check Log files to 
 - **Header**: `timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name`
 - **Example**: `2025-09-27T04:19:58.481Z;Alliance;GuildX;PlayerA;12345;Sword of Dawn;1;Alliance;GuildY;PlayerB`
 
-### Type #2 - Check Log
+### Type #2 - Chest Log
 - **Format**: Tab-separated values with quoted fields
 - **Header**: `"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"`
 - **Example**: `"09/27/2025 04:20:06"\t"PlayerA"\t"Shield of Light"\t"None"\t"Rare"\t"2"`
@@ -145,7 +145,7 @@ timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_
 2025-09-27T05:20:00.000Z;Alliance;GuildX;PlayerA;67890;Shield of Light;2;Alliance;GuildZ;PlayerC
 ```
 
-### Check Log Sample
+### Chest Log Sample
 ```
 "Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"
 "09/27/2025 04:20:06"\t"PlayerA"\t"Sword of Dawn"\t"None"\t"Rare"\t"5"

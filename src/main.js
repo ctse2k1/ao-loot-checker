@@ -19,11 +19,11 @@ class LootChecker {
     initializeEventListeners() {
         // Drop zone event listeners
         const lootLoggerZone = document.getElementById('loot-logger-zone');
-        const checkLogZone = document.getElementById('check-log-zone');
+        const chestLogZone = document.getElementById('chest-log-zone');
         const processBtn = document.getElementById('process-btn');
 
         this.setupDropZone(lootLoggerZone, this.handleLootLoggerDrop.bind(this));
-        this.setupDropZone(checkLogZone, this.handleCheckLogDrop.bind(this));
+        this.setupDropZone(chestLogZone, this.handleCheckLogDrop.bind(this));
 
         processBtn.addEventListener('click', this.processFiles.bind(this));
     }
@@ -82,14 +82,14 @@ class LootChecker {
         }
 
         if (validFiles.length > 1) {
-            this.showError('Only one Check Log file allowed');
+            this.showError('Only one Chest Log file allowed');
             return;
         }
 
         this.checkLogFile = validFiles[0];
-        this.updateFileInfo('check-log-info', this.checkLogFile.name);
+        this.updateFileInfo('chest-log-info', this.checkLogFile.name);
         
-        document.getElementById('check-log-zone').classList.add('has-file');
+        document.getElementById('chest-log-zone').classList.add('has-file');
         this.updateProcessButton();
     }
 
@@ -126,7 +126,7 @@ class LootChecker {
             const mergedLootLogger = mergeLootLoggerFiles(lootLoggerData);
 
             // Step 3: Copy Type #2 file
-            this.updateProgress(40, 'Processing Check Log...');
+            this.updateProgress(40, 'Processing Chest Log...');
             const outputCheckLog = [...checkLogData];
 
             // Step 4: Matching and reduction
@@ -174,8 +174,8 @@ class LootChecker {
         document.getElementById('download-loot-logger').href = lootLoggerUrl;
         document.getElementById('download-loot-logger').download = 'merged_loot_logger.txt';
 
-        document.getElementById('download-check-log').href = checkLogUrl;
-        document.getElementById('download-check-log').download = 'updated_check_log.txt';
+        document.getElementById('download-chest-log').href = checkLogUrl;
+        document.getElementById('download-chest-log').download = 'updated_chest_log.txt';
     }
 
     showProgress(show) {

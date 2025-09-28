@@ -192,13 +192,13 @@
 <body>
     <header>
         <h1>AO Loot Checker</h1>
-        <p class="description">Process Loot Logger and Check Log files to match and reduce item quantities</p>
+        <p class="description">Process Loot Logger and Chest Log files to match and reduce item quantities</p>
     </header>
 
     <div class="file-format-info">
         <h4>File Format Information</h4>
         <p><strong>Loot Logger (Type #1):</strong> Semicolon-separated with header: <code>timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name</code></p>
-        <p><strong>Check Log (Type #2):</strong> Tab-separated with quoted fields: <code>"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"</code></p>
+        <p><strong>Chest Log (Type #2):</strong> Tab-separated with quoted fields: <code>"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"</code></p>
     </div>
 
     <div class="drop-zones">
@@ -209,10 +209,10 @@
             <div class="file-info" id="loot-logger-info"></div>
         </div>
         
-        <div class="drop-zone" id="check-log-zone">
-            <h3>Check Log File (Type #2)</h3>
-            <p>Drag & drop one Check Log file here</p>
-            <div class="file-info" id="check-log-info"></div>
+        <div class="drop-zone" id="chest-log-zone">
+            <h3>Chest Log File (Type #2)</h3>
+            <p>Drag & drop one Chest Log file here</p>
+            <div class="file-info" id="chest-log-info"></div>
         </div>
     </div>
 
@@ -234,7 +234,7 @@
         <p>Download the processed files:</p>
         <div class="download-links">
             <a href="#" class="download-link" id="download-loot-logger">Download Merged Loot Logger</a>
-            <a href="#" class="download-link" id="download-check-log">Download Updated Check Log</a>
+            <a href="#" class="download-link" id="download-chest-log">Download Updated Chest Log</a>
         </div>
     </div>
 

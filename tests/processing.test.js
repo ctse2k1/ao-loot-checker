@@ -50,8 +50,8 @@ malformed_row`;
         });
     });
 
-    describe('Check Log Parsing', () => {
-        test('should parse valid Check Log content', () => {
+    describe('Chest Log Parsing', () => {
+        test('should parse valid Chest Log content', () => {
             const content = `"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"
 "09/27/2025 04:20:06"\t"PlayerA"\t"Shield of Light"\t"None"\t"Rare"\t"2"`;
             
@@ -72,7 +72,7 @@ malformed_row`;
             const content = `"Invalid"\t"Header"
 "09/27/2025 04:20:06"\t"PlayerA"`;
             
-            expect(() => parseCheckLogContent(content)).toThrow('Invalid Check Log file format');
+            expect(() => parseCheckLogContent(content)).toThrow('Invalid Chest Log file format');
         });
 
         test('should skip malformed rows', () => {

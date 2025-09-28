@@ -46,7 +46,7 @@ export function parseCheckLogContent(content) {
     const lines = normalizedContent.split('\n').filter(line => line.trim());
     
     if (lines.length === 0) {
-        throw new Error('Check Log file is empty');
+        throw new Error('Chest Log file is empty');
     }
 
     // Validate header
@@ -54,7 +54,7 @@ export function parseCheckLogContent(content) {
     const expectedHeader = '"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"';
     
     if (header !== expectedHeader) {
-        throw new Error('Invalid Check Log file format');
+        throw new Error('Invalid Chest Log file format');
     }
 
     // Parse data rows
@@ -88,7 +88,7 @@ export function matchAndReduceQuantities(lootLoggerData, checkLogData) {
     // Create a map for efficient lookup
     const checkLogMap = new Map();
     
-    // Group check log entries by Player + Item
+    // Group chest log entries by Player + Item
     checkLogData.forEach((entry, index) => {
         const key = `${entry.Player}|${entry.Item}`;
         if (!checkLogMap.has(key)) {
@@ -140,7 +140,7 @@ export function pruneOldTimestamps(lootLoggerData, checkLogData) {
 
     if (!latestTimestamp) return;
 
-    // Convert check log dates to ISO-8601 and filter
+    // Convert chest log dates to ISO-8601 and filter
     for (let i = checkLogData.length - 1; i >= 0; i--) {
         const entry = checkLogData[i];
         
