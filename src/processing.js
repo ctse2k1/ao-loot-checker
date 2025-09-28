@@ -1,7 +1,9 @@
 // Processing logic for AO Loot Checker (separated for testing)
 
 export function parseLootLoggerContent(content) {
-    const lines = content.split('\n').filter(line => line.trim());
+    // Normalize line endings and remove carriage returns
+    const normalizedContent = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lines = normalizedContent.split('\n').filter(line => line.trim());
     
     if (lines.length === 0) {
         throw new Error('Loot Logger file is empty');
@@ -39,7 +41,9 @@ export function parseLootLoggerContent(content) {
 }
 
 export function parseCheckLogContent(content) {
-    const lines = content.split('\n').filter(line => line.trim());
+    // Normalize line endings and remove carriage returns
+    const normalizedContent = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lines = normalizedContent.split('\n').filter(line => line.trim());
     
     if (lines.length === 0) {
         throw new Error('Check Log file is empty');
