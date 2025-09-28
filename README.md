@@ -1,47 +1,49 @@
 # AO Loot Checker
 
-A lightweight web application for processing Loot Logger and Chest Log files to match and reduce item quantities.
+A lightweight web application for processing Loot Logger and Chest Log files to identify missing looted items.
 
 ## Features
 
 - **Drag & Drop Interface**: Easy file upload with visual feedback
 - **File Processing**: 
-  - Merge multiple Loot Logger files (Type #1)
-  - Process Chest Log files (Type #2)
-  - Match items between files and reduce quantities
-  - Prune old timestamps based on loot activity
+  - Process Loot Logger file(s) produced by AO Loot Logger
+  - Process Chest Log file produced by Albion Online in-game chest log feature
+  - Identify missing looted items by checking looted items in Loot Logger file(s) against the recorded items in Chest Log file
+  - Chest Log file may have stale recorded items that are excluded from the processing
 - **Client-Side Processing**: All processing happens in the browser
 - **Error Handling**: Comprehensive validation and error messages
 - **Unit Tests**: Complete test coverage for processing logic
 
 ## File Formats
 
-### Type #1 - Loot Logger
+### Loot Logger file(s) produced by AO Loot Logger
 - **Format**: Semicolon-separated values
 - **Header**: `timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name`
-- **Example**: `2025-09-27T04:19:58.481Z;Alliance;GuildX;PlayerA;12345;Sword of Dawn;1;Alliance;GuildY;PlayerB`
+- **Example**: `2025-09-27T04:18:21.962Z;TOR;TEMPLARS_ORDER;SeeFarLong;T1_ALCHEMY_COMMON;Rare Animal Remains;110;;;@ISLAND@5020890d-fb76-4472-8e71-848601406ad2`
 
-### Type #2 - Chest Log
+### Chest Log file produced by Albion Online in-game chest log feature
 - **Format**: Tab-separated values with quoted fields
 - **Header**: `"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"`
-- **Example**: `"09/27/2025 04:20:06"\t"PlayerA"\t"Shield of Light"\t"None"\t"Rare"\t"2"`
+- **Example**: `"09/27/2025 04:18:27"\t"SeeFarLong"\t"Rare Animal Remains"\t"0"\t"1"\t"110"`
 
 ## Workflow
 
 1. **Input**: User drags & drops:
-   - At least one Type #1 file (mandatory)
-   - One Type #2 file (mandatory)
-   - Optional second Type #1 file
+   - First Loot Logger file (mandatory) - Confirmed loot items
+   - Second Loot Logger file (optional) - Unconfirmed loot items
+   - One Chest Log file (mandatory) - Recorded loot items
 
-2. **Merge**: Combine Type #1 files into a single output file
+2. **Merge**: Combine first Loot Logger file and second Loot Logger file into a single output file in Loot Logger file format
 
-3. **Copy**: Duplicate Type #2 file into output
+3. **Identify timestamp**: Identify most recent timestamp among all loot items in the output Loot Logger file
 
-4. **Matching & Reduction**: For each loot item, find matches and reduce quantities
+4. **Copy**: Duplicate Chest Log file into an output file in Chest Log file format.
 
-5. **Timestamp Pruning**: Remove items with timestamps older than the most recent loot activity
+5. **Process timestamp**: Remove loot items in the output Chest Log file with timestamps older than the most timestamp found in the output Loot Logger file
 
-6. **Output**: Download the processed files
+6. **Match, Update and Remove**: For each loot item in the output Loot Logger file, find matches, then remove matched items from both the output Loot Logger file and output Chest Log file.
+
+7. **Output**: Download the processed files
 
 ## Setup
 
@@ -135,22 +137,6 @@ npm run build
 1. Connect your repository to AWS Amplify
 2. Set build command: `npm run build`
 3. Set publish directory: `dist`
-
-## Sample Test Data
-
-### Loot Logger Sample
-```
-timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name
-2025-09-27T04:19:58.481Z;Alliance;GuildX;PlayerA;12345;Sword of Dawn;1;Alliance;GuildY;PlayerB
-2025-09-27T05:20:00.000Z;Alliance;GuildX;PlayerA;67890;Shield of Light;2;Alliance;GuildZ;PlayerC
-```
-
-### Chest Log Sample
-```
-"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"
-"09/27/2025 04:20:06"\t"PlayerA"\t"Sword of Dawn"\t"None"\t"Rare"\t"5"
-"09/27/2025 04:21:00"\t"PlayerA"\t"Shield of Light"\t"None"\t"Common"\t"3"
-```
 
 ## Project Structure
 
