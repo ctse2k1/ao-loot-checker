@@ -223,48 +223,38 @@ class LootChecker {
 
     uploadToLootLoggerViewer(lootLoggerBlob, statusElement) {
         try {
-            statusElement.textContent = 'Creating upload form...';
+            statusElement.textContent = 'Preparing upload...';
             statusElement.style.color = '#3498db';
 
             // Create a temporary file from the blob
             const file = new File([lootLoggerBlob], 'missing_loot_items.txt', { type: 'text/plain' });
 
-            // Create a hidden form
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'https://matheus.sampaio.us/ao-loot-logger-viewer/';
-            form.enctype = 'multipart/form-data';
-            form.target = '_blank';
-            form.style.display = 'none';
-
-            // Create file input
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.name = 'file';
-            fileInput.style.display = 'none';
-
-            // Create a data transfer object to set the file
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
-
-            // Add file input to form
-            form.appendChild(fileInput);
-
-            // Add form to document
-            document.body.appendChild(form);
-
-            statusElement.textContent = 'Opening Loot Logger Viewer...';
-
-            // Submit the form
-            form.submit();
-
-            // Clean up after a short delay
-            setTimeout(() => {
-                document.body.removeChild(form);
-                statusElement.textContent = 'Upload initiated! The Loot Logger Viewer should open in a new tab.';
+            // Create a temporary download link for the file
+            const fileUrl = URL.createObjectURL(file);
+            
+            // Open the Loot Logger Viewer in a new tab
+            const newTab = window.open('https://matheus.sampaio.us/ao-loot-logger-viewer/', '_blank');
+            
+            if (newTab) {
+                statusElement.innerHTML = `
+                    Loot Logger Viewer opened in a new tab.<br>
+                    <strong>Instructions:</strong><br>
+                    1. In the new tab, look for the file upload button/area<br>
+                    2. Upload this file: <a href="${fileUrl}" download="missing_loot_items.txt">missing_loot_items.txt</a><br>
+                    3. The file will be downloaded to your computer<br>
+                    4. Upload it to the Loot Logger Viewer
+                `;
                 statusElement.style.color = '#27ae60';
-            }, 1000);
+            } else {
+                statusElement.innerHTML = `
+                    Popup blocked! Please allow popups for this site.<br>
+                    <strong>Manual upload instructions:</strong><br>
+                    1. Download this file: <a href="${fileUrl}" download="missing_loot_items.txt">missing_loot_items.txt</a><br>
+                    2. Go to <a href="https://matheus.sampaio.us/ao-loot-logger-viewer/" target="_blank">Loot Logger Viewer</a><br>
+                    3. Upload the downloaded file
+                `;
+                statusElement.style.color = '#f39c12';
+            }
 
         } catch (error) {
             statusElement.textContent = `Upload failed: ${error.message}`;
