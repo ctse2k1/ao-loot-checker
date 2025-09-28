@@ -11,18 +11,21 @@ import {
 
 class LootChecker {
     constructor() {
-        this.lootLoggerFiles = [];
+        this.confirmedLootFile = null;
+        this.unconfirmedLootFile = null;
         this.checkLogFile = null;
         this.initializeEventListeners();
     }
 
     initializeEventListeners() {
         // Drop zone event listeners
-        const lootLoggerZone = document.getElementById('loot-logger-zone');
+        const confirmedLootZone = document.getElementById('confirmed-loot-zone');
+        const unconfirmedLootZone = document.getElementById('unconfirmed-loot-zone');
         const chestLogZone = document.getElementById('chest-log-zone');
         const processBtn = document.getElementById('process-btn');
 
-        this.setupDropZone(lootLoggerZone, this.handleLootLoggerDrop.bind(this));
+        this.setupDropZone(confirmedLootZone, this.handleConfirmedLootDrop.bind(this));
+        this.setupDropZone(unconfirmedLootZone, this.handleUnconfirmedLootDrop.bind(this));
         this.setupDropZone(chestLogZone, this.handleCheckLogDrop.bind(this));
 
         processBtn.addEventListener('click', this.processFiles.bind(this));
@@ -47,7 +50,7 @@ class LootChecker {
         });
     }
 
-    handleLootLoggerDrop(files) {
+    handleConfirmedLootDrop(files) {
         const validFiles = files.filter(file => 
             file.name.endsWith('.txt') || file.name.endsWith('.csv')
         );
@@ -57,17 +60,37 @@ class LootChecker {
             return;
         }
 
-        // Allow up to 2 files for Type #1
-        if (this.lootLoggerFiles.length + validFiles.length > 2) {
-            this.showError('Maximum 2 Loot Logger files allowed');
+        if (validFiles.length > 1) {
+            this.showError('Only one Confirmed Loot Logger file allowed');
             return;
         }
 
-        this.lootLoggerFiles.push(...validFiles);
-        this.updateFileInfo('loot-logger-info', 
-            this.lootLoggerFiles.map(f => f.name).join(', '));
+        this.confirmedLootFile = validFiles[0];
+        this.updateFileInfo('confirmed-loot-info', this.confirmedLootFile.name);
         
-        document.getElementById('loot-logger-zone').classList.add('has-file');
+        document.getElementById('confirmed-loot-zone').classList.add('has-file');
+        this.updateProcessButton();
+    }
+
+    handleUnconfirmedLootDrop(files) {
+        const validFiles = files.filter(file => 
+            file.name.endsWith('.txt') || file.name.endsWith('.csv')
+        );
+
+        if (validFiles.length === 0) {
+            this.showError('Please drop valid text files (.txt or .csv)');
+            return;
+        }
+
+        if (validFiles.length > 1) {
+            this.showError('Only one Unconfirmed Loot Logger file allowed');
+            return;
+        }
+
+        this.unconfirmedLootFile = validFiles[0];
+        this.updateFileInfo('unconfirmed-loot-info', this.unconfirmedLootFile.name);
+        
+        document.getElementById('unconfirmed-loot-zone').classList.add('has-file');
         this.updateProcessButton();
     }
 
@@ -100,10 +123,10 @@ class LootChecker {
 
     updateProcessButton() {
         const processBtn = document.getElementById('process-btn');
-        const hasLootLogger = this.lootLoggerFiles.length >= 1;
+        const hasConfirmedLoot = this.confirmedLootFile !== null;
         const hasCheckLog = this.checkLogFile !== null;
         
-        processBtn.disabled = !(hasLootLogger && hasCheckLog);
+        processBtn.disabled = !(hasConfirmedLoot && hasCheckLog);
     }
 
     async processFiles() {
@@ -115,9 +138,17 @@ class LootChecker {
             // Step 1: Parse all files
             this.updateProgress(10, 'Parsing files...');
             
-            const lootLoggerData = await Promise.all(
-                this.lootLoggerFiles.map(file => this.parseLootLoggerFile(file))
-            );
+            const lootLoggerData = [];
+            
+            // Parse confirmed loot file (mandatory)
+            const confirmedLootData = await this.parseLootLoggerFile(this.confirmedLootFile);
+            lootLoggerData.push(confirmedLootData);
+            
+            // Parse unconfirmed loot file (optional)
+            if (this.unconfirmedLootFile) {
+                const unconfirmedLootData = await this.parseLootLoggerFile(this.unconfirmedLootFile);
+                lootLoggerData.push(unconfirmedLootData);
+            }
             
             const checkLogData = await this.parseCheckLogFile(this.checkLogFile);
 
@@ -172,10 +203,10 @@ class LootChecker {
         const checkLogUrl = URL.createObjectURL(checkLogBlob);
 
         document.getElementById('download-loot-logger').href = lootLoggerUrl;
-        document.getElementById('download-loot-logger').download = 'merged_loot_logger.txt';
+        document.getElementById('download-loot-logger').download = 'missing_loot_items.txt';
 
         document.getElementById('download-chest-log').href = checkLogUrl;
-        document.getElementById('download-chest-log').download = 'updated_chest_log.txt';
+        document.getElementById('download-chest-log').download = 'remaining_chest_items.txt';
     }
 
     showProgress(show) {

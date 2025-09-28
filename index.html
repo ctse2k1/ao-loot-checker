@@ -37,7 +37,7 @@
 
         .drop-zones {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -168,25 +168,7 @@
             display: none;
         }
 
-        .file-format-info {
-            background: #f8f9fa;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 20px 0;
-            font-size: 0.9em;
-        }
 
-        .file-format-info h4 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .file-format-info code {
-            background: #e9ecef;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
     </style>
 </head>
 <body>
@@ -195,23 +177,27 @@
         <p class="description">Process Loot Logger and Chest Log files to match and reduce item quantities</p>
     </header>
 
-    <div class="file-format-info">
-        <h4>File Format Information</h4>
-        <p><strong>Loot Logger (Type #1):</strong> Semicolon-separated with header: <code>timestamp_utc;looted_by__alliance;looted_by__guild;looted_by__name;item_id;item_name;quantity;looted_from__alliance;looted_from__guild;looted_from__name</code></p>
-        <p><strong>Chest Log (Type #2):</strong> Tab-separated with quoted fields: <code>"Date"\t"Player"\t"Item"\t"Enchantment"\t"Quality"\t"Amount"</code></p>
-    </div>
+
 
     <div class="drop-zones">
-        <div class="drop-zone" id="loot-logger-zone">
-            <h3>Loot Logger Files (Type #1)</h3>
-            <p>Drag & drop at least one Loot Logger file here</p>
-            <p><small>Optional: Drop a second file to merge</small></p>
-            <div class="file-info" id="loot-logger-info"></div>
+        <div class="drop-zone" id="confirmed-loot-zone">
+            <h3>Loot Logger file - Confirmed loot items</h3>
+            <p>Drag & drop one Loot Logger file here</p>
+            <p><small>Mandatory</small></p>
+            <div class="file-info" id="confirmed-loot-info"></div>
+        </div>
+        
+        <div class="drop-zone" id="unconfirmed-loot-zone">
+            <h3>Loot Logger file - Unconfirmed loot items</h3>
+            <p>Drag & drop one Loot Logger file here</p>
+            <p><small>Optional</small></p>
+            <div class="file-info" id="unconfirmed-loot-info"></div>
         </div>
         
         <div class="drop-zone" id="chest-log-zone">
-            <h3>Chest Log File (Type #2)</h3>
+            <h3>Chest Log file - Recorded loot items</h3>
             <p>Drag & drop one Chest Log file here</p>
+            <p><small>Mandatory</small></p>
             <div class="file-info" id="chest-log-info"></div>
         </div>
     </div>
@@ -233,8 +219,8 @@
         <h2>Processing Complete</h2>
         <p>Download the processed files:</p>
         <div class="download-links">
-            <a href="#" class="download-link" id="download-loot-logger">Download Merged Loot Logger</a>
-            <a href="#" class="download-link" id="download-chest-log">Download Updated Chest Log</a>
+            <a href="#" class="download-link" id="download-loot-logger">Download Missing Loot Items</a>
+            <a href="#" class="download-link" id="download-chest-log">Download Remaining Chest Items</a>
         </div>
     </div>
 
